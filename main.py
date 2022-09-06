@@ -7,7 +7,7 @@ import schedule
 from bs4 import BeautifulSoup
 
 origin_host = 'https://xiaomirom.com'
-file_path = '/Users/imali/Downloads'
+file_path = '~'
 
 list_page_url = origin_host + "/rom/redmi-k50-rubens-china-fastboot-recovery-rom/#%E4%B8%8B%E8%BD%BD-%E7%BA%A2%E7%B1" \
                               "%B3-k50-%E5%BC%80%E5%8F%91%E7%89%88%E5%86%85%E6%B5%8B%E7%89%88-recovery-%E5%8D%A1%E5" \
@@ -16,12 +16,15 @@ list_page_url = origin_host + "/rom/redmi-k50-rubens-china-fastboot-recovery-rom
 
 def get_html(url):
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) '
-                      'Chrome/104.0.0.0 Safari/537.36'
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36',
     }
     res = requests.get(url, headers=headers, allow_redirects=False)
-    res.encoding = 'utf-8'
-    return res.text
+    if res.status_code == 200:
+        res.encoding = 'utf-8'
+        return res.text
+    else:
+        sys.stdout.write('------%s，爬取失败------' % (res.status_code))
+        return ''
 
 
 def get_download_page_url(html):
@@ -74,11 +77,13 @@ def chunk_download(url, path):
 
 def download_rom():
     list_page_html = get_html(list_page_url)
-    download_page_url = get_download_page_url(list_page_html)
-    download_url = get_target_download_url(download_page_url)
-    # 测试其他网址
-    # download_url = 'https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png'
-    chunk_download(download_url, file_path + '/' + download_url.split('/')[-1])
+    if (len(list_page_html) > 0):
+        download_page_url = get_download_page_url(list_page_html)
+        download_url = get_target_download_url(download_page_url)
+        # 测试其他网址
+        # download_url = 'https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png'
+        chunk_download(download_url, file_path + '/' +
+                       download_url.split('/')[-1])
 
 
 # 临时测试
@@ -87,5 +92,5 @@ def download_rom():
 schedule.every().saturday.at('00:00').do(download_rom)
 
 while True:
-    schedule.run_pending()
-    time.sleep(1)
+   schedule.run_pending()
+   time.sleep(1)
