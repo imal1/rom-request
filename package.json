@@ -12,6 +12,8 @@
     "tsc": "vue-tsc --noEmit"
   },
   "dependencies": {
+    "@wangeditor/editor": "^5.1.18",
+    "@wangeditor/editor-for-vue": "^5.1.12",
     "ant-design-vue": "^3.2.10",
     "axios": "^0.27.2",
     "dayjs": "^1.11.3",

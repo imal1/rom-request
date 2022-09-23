@@ -1,8 +1,7 @@
-<script src="../dairy/diaryCommand.ts"></script>
 <template>
   <div style="margin: 8px 0; max-width: 600px">
     <a-card body-style="padding: 0 12px">
-      <a-list item-layout="horizontal" :data-source="taskList">
+      <a-list item-layout="horizontal" :data-source="diaryList">
         <template #renderItem="{ item, index }">
           <a-list-item>
             <template #actions>
@@ -19,9 +18,6 @@
                   MyDayjs(item.createTime).format("YYYY-MM-DD HH:mm:ss")
                 }}
               </template>
-              <template #avatar>
-                <a-checkbox v-model:checked="item.isFinished" />
-              </template>
             </a-list-item-meta>
           </a-list-item>
         </template>
@@ -29,23 +25,22 @@
     </a-card>
   </div>
 </template>
-
 <script setup lang="ts">
 import { toRefs } from "vue";
-import { useTodoStore } from "./todoStore";
+import { useDiaryStore } from "./diaryStore";
 import MyDayjs from "../../../plugins/myDayjs";
 
-interface TodoBoxProps {
+interface DiaryBoxProps {
   today: boolean;
 }
 
-const props = withDefaults(defineProps<TodoBoxProps>(), {});
+const props = withDefaults(defineProps<DiaryBoxProps>(), {});
 const { today } = toRefs(props);
 
-const { taskList, deleteTask } = useTodoStore();
+const { diaryList, deleteDiary } = useDiaryStore();
 
 const doDelete = (index: number) => {
-  deleteTask(index);
+  deleteDiary(index);
 };
 </script>
 
