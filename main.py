@@ -3,6 +3,7 @@ import sys
 
 import requests
 from bs4 import BeautifulSoup
+from tqdm import tqdm
 
 origin_host = 'https://xiaomirom.com'
 file_path = '/Users/imali/Downloads'
@@ -78,16 +79,20 @@ def chunk_download(url, path):
     headers = {'Range': 'bytes=%d-' % temp_size}
     r = requests.get(url, stream=True, verify=False, headers=headers)
 
-    with open(path, "ab") as f:
+    with open(path, "ab") as f, tqdm(
+            desc=path.split('/')[-1],
+            initial=temp_size,
+            total=total_size,
+            unit='iB',
+            unit_scale=True,
+            unit_divisor=1024
+    ) as bar:
         for chunk in r.iter_content(chunk_size=1024):
             if chunk:
                 temp_size += len(chunk)
-                f.write(chunk)
+                size = f.write(chunk)
                 f.flush()
-
-                # done = int(50 * temp_size / total_size)
-                # sys.stdout.write("\r[%s%s] %d%%" % ('█' * done, ' ' * (50 - done), 100 * temp_size / total_size))
-                # sys.stdout.flush()
+                bar.update(size)
                 if temp_size == total_size:
                     sys.stdout.write('------下载任务完成------')
                     sys.stdout.flush()
